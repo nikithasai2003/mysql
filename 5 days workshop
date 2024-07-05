@@ -1,0 +1,75 @@
+-- Create the database
+CREATE DATABASE company_db;
+
+-- Use the newly created database
+USE company_db;
+
+-- Create the departments table
+CREATE TABLE departments (
+    deptno INT PRIMARY KEY,
+    dname VARCHAR(50),
+    loc VARCHAR(50)
+);
+
+-- Insert data into the departments table
+INSERT INTO departments (deptno, dname, loc) VALUES
+(10, 'ACCOUNTING', 'NEW YORK'),
+(20, 'RESEARCH', 'DALLAS'),
+(30, 'SALES', 'CHICAGO'),
+(40, 'OPERATIONS', 'BOSTON');
+
+-- Create the employees table
+CREATE TABLE employees (
+    empno INT PRIMARY KEY,
+    ename VARCHAR(50),
+    job VARCHAR(50),
+    mgr INT,
+    hiredate DATE,
+    sal INT,
+    comm INT,
+    deptno INT,
+    FOREIGN KEY (deptno) REFERENCES departments(deptno)
+);
+
+-- Insert data into the employees table
+INSERT INTO employees (empno, ename, job, mgr, hiredate, sal, comm, deptno) VALUES
+(7369, 'SMITH', 'CLERK', 7902, '1980-12-17', 800, NULL, 20),
+(7499, 'ALLEN', 'SALESMAN', 7698, '1981-02-20', 1600, 300, 30),
+(7521, 'WARD', 'SALESMAN', 7698, '1981-02-22', 1250, 500, 30),
+(7566, 'JONES', 'MANAGER', 7839, '1981-04-02', 2975, NULL, 20),
+(7654, 'MARTIN', 'SALESMAN', 7698, '1981-09-28', 1250, 1400, 30),
+(7698, 'BLAKE', 'MANAGER', 7839, '1981-05-01', 2850, NULL, 30),
+(7782, 'CLARK', 'MANAGER', 7839, '1981-06-09', 2450, NULL, 10),
+(7788, 'SCOTT', 'ANALYST', 7566, '1987-04-19', 3000, NULL, 20),
+(7839, 'KING', 'PRESIDENT', NULL, '1981-11-17', 5000, NULL, 10),
+(7844, 'TURNER', 'SALESMAN', 7698, '1981-09-08', 1500, 0, 30),
+(7876, 'ADAMS', 'CLERK', 7788, '1987-05-23', 1100, NULL, 20),
+(7900, 'JAMES', 'CLERK', 7698, '1981-12-03', 950, NULL, 30),
+(7902, 'FORD', 'ANALYST', 7566, '1981-12-03', 3000, NULL, 20),
+(7934, 'MILLER', 'CLERK', 7782, '1982-01-23', 1300, NULL, 10);
+
+select ename from employees where hiredate>(select hiredate from employees where job='manager') and sal>all(select sal from employees where job='clerk');
+select max(sal) from employees where sal<(select max(sal) from employees) ;
+select e.ename,d.deptno from employees e cross join departments d;
+select e.ename,d.dname from employees e inner join departments d where e.deptno=d.deptno;
+select e.ename,d.loc from employees e inner join departments d where e.deptno=d.deptno and job='manager';
+select e.ename,e.sal,d.dname from employees e inner join departments d where e.deptno=d.deptno;
+select e.sal,d.dname from employees e inner join departments d where e.deptno=d.deptno and dname='accounting';
+select e.job,d.dname from employees e inner join departments d where e.deptno=d.deptno and job='manager';
+select * from employees e right join  departments d on e.deptno=d.deptno;
+select * from employees e1 join employees e2 on e1.mgr=e2.empno;
+select e1.ename,e2.sal,e2.ename,e1.sal from employees e1 join employees e2 where e1.mgr=e2.empno;
+select e1.ename,e2.ename,e2.deptno from employees e1 join employees e2 on e1.job='clerk' and e1.mgr=e2.empno;
+select e1.ename,e2.job from employees e1 join employees e2 on e2.job='analyst' and e1.mgr=e2.empno;
+select e1.ename,e1.sal,e2.ename,e2.sal from employees e1 join employees e2 on e2.sal>e1.sal and e1.mgr=e2.empno;
+select e1.ename,e2.ename,e2.job from employees e1 join employees e2 on e1.job=e2.job and e1.mgr=e2.empno;
+select e1.ename,e2.ename from employees e1 join employees e2 where e2.deptno=10 or e2.deptno=20;
+
+select ename,sal from employees e natural join departments d where d.dname='president' order by ename desc;
+
+create table hello
+as 
+select * from branch;
+select * from hello;
+create index a_dname
+on departments (dname);
